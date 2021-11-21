@@ -36,13 +36,15 @@
   >
     {{ link.enteredLink }}
   </h4>
-  <div class="p-6 lg:flex lg:ml-auto lg:items-center">
+  <div
+    class="p-6 flex flex-col flex-1 lg:flex-row lg:justify-end lg:items-center"
+  >
     <p class="text-cyan mb-4 lg:mb-0 lg:mr-8 text-sm xs:text-base">
       {{ link.shortenedLink }}
     </p>
     <button
       type="submit"
-      class="rounded-md py-2 px-8 w-full text-white bg-cyan"
+      class="rounded-md py-2 px-8 w-full lg:w-auto text-white bg-cyan"
       :class="{ 'bg-darkViolet': copied, 'hover:bg-cyan-hover': !copied }"
       @click.prevent="copy"
     >
@@ -58,8 +60,8 @@ import { ref } from "vue";
 
 export default {
   props: ["link"],
-  emits: ["remove-link"],
-  setup(props) {
+  emits: ["remove-link", "invalid-url"],
+  setup(props, context) {
     const { toClipboard } = useClipboard();
     const copied = ref(false);
 
@@ -71,7 +73,7 @@ export default {
           copied.value = false;
         }, 5000);
       } catch (error) {
-        console.log(error);
+        alert("Could not copy to clipboard, try again later.");
       }
     };
 

@@ -80,7 +80,6 @@ export default {
 
     const toggleMobileNav = () => {
       mobileActive.value = !mobileActive.value;
-      console.log("clicked");
     };
 
     return { mobileActive, isMobile, toggleMobileNav };

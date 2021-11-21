@@ -59,8 +59,8 @@
   </div>
   <teleport to="#link-items" v-if="isMounted">
     <li
-      v-for="(item, index) in shortenedLinksArr"
-      :key="index"
+      v-for="item in shortenedLinksArr"
+      :key="item.id"
       class="
         rounded-lg
         w-10/12
@@ -73,7 +73,11 @@
         lg:flex lg:items-center
       "
     >
-      <SingleShorten :link="item" @remove-link="removeLinkItem" />
+      <SingleShorten
+        :link="item"
+        @remove-link="removeLinkItem"
+        @invalid-url="errorMsg = 'Please enter a valid URL.'"
+      />
     </li>
   </teleport>
 </template>
@@ -82,6 +86,7 @@
 import { ref } from "@vue/reactivity";
 import SingleShorten from "./SingleShorten.vue";
 import { onMounted } from "@vue/runtime-core";
+import { uid } from "uid";
 
 export default {
   components: { SingleShorten },
@@ -120,6 +125,7 @@ export default {
         shortenedLinksArr.value.push({
           enteredLink: data.result.original_link,
           shortenedLink: data.result.full_short_link,
+          id: uid(),
         });
         localStorage.setItem(
           "savedLinks",
@@ -127,13 +133,17 @@ export default {
         );
         link.value = null;
       } catch (err) {
-        alert(`ERROR: ${err.message}`);
+        errorMsg.value = "Please enter a valid URL.";
+        link.value = null;
+        setTimeout(() => {
+          errorMsg.value = null;
+        }, 5000);
       }
     };
 
     const removeLinkItem = (linkItem) => {
       shortenedLinksArr.value = shortenedLinksArr.value.filter(
-        (item) => linkItem.shortenedLink !== item.shortenedLink
+        (item) => item.id !== linkItem.id
       );
       localStorage.setItem(
         "savedLinks",
